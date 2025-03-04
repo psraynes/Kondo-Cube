@@ -1,4 +1,13 @@
 import scrython as scry
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 
-print("temp")
+
+
+def main():
+    card = scry.cards.Random()
+    print("hello world")
+
+
+
+if __name__ == '__main__':
+    main()
