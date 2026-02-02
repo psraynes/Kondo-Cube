@@ -13,8 +13,8 @@ class MyClient(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.smash_list = []
-        self.pass_list = []
+        self.sparks_joy_list = []
+        self.does_not_spark_joy_list = []
 
         self.last_card_message_id = None
         self.channel_id = 1466458603010654319 # replace with your channel ID
@@ -37,41 +37,41 @@ class MyClient(discord.Client):
 
         # Check reactions on last card message
         if self.last_card_message_id is not None:
-            total_smash = 0
-            total_pass = 0
+            total_sparks_joy = 0
+            total_does_not_spark_joy = 0
             try:
                 last_message = await channel.fetch_message(self.last_card_message_id)
                 for reaction in last_message.reactions:
-                    if reaction.emoji == '❤️':
-                        total_smash += reaction.count - 1  # exclude bot's own reaction
-                    elif reaction.emoji == '🤮':
-                        total_pass += reaction.count - 1  # exclude bot's own reaction
+                    if reaction.emoji == '💖':
+                        total_sparks_joy += reaction.count - 1  # exclude bot's own reaction
+                    elif reaction.emoji == '😭':
+                        total_does_not_spark_joy += reaction.count - 1  # exclude bot's own reaction
 
                 card_info = last_message.embeds[0].footer.text
                 card_name, card_set, card_number = card_info.split(':')
-                if total_smash > total_pass:
-                    description += f'The community has chosen to Smash {card_name} with {total_smash} votes! Added to the Smash list.\n\n'
-                    self.smash_list.append(card_info)
-                elif total_pass > total_smash:
-                    description += f'The community has chosen to Pass {card_name} with {total_pass} votes! Added to the Pass list.\n\n'
-                    self.pass_list.append(card_info)
+                if total_sparks_joy > total_does_not_spark_joy:
+                    description += f'The community has chosen: {card_name} ･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ with {total_sparks_joy} votes! Added to the list.\n\n'
+                    self.sparks_joy_list.append(card_info)
+                elif total_does_not_spark_joy > total_sparks_joy:
+                    description += f'The community has chosen: {card_name} Does Not Spark Joy with {total_does_not_spark_joy} votes! Added to the list.\n\n'
+                    self.does_not_spark_joy_list.append(card_info)
                 else:
-                    description += f'The community is tied on {card_name} with {total_smash} Smash votes and {total_pass} Pass votes!\n\n'
+                    description += f'The community is tied on {card_name} with {total_sparks_joy} Sparks Joy votes and {total_does_not_spark_joy} Does Not Spark Joy votes!\n\n'
 
             except discord.NotFound:
                 pass  # message was deleted
 
         card = self.get_new_card()
 
-        title = f'SMASH OR PASS: {card.name} | {card.set_name}'
-        description += f'React with ❤️ to add to Smash, React with 🤮 to add to Pass.'
+        title = f'DOES {card.name} | {card.set_name}  ✨🌸･｡:★:｡･ﾟ✧･ﾟ･✧  ＳＰＡＲＫ  ＪＯＹ  ✧･ﾟ･✧･ﾟ｡:★:｡･ﾟ🌸✨?'
+        description += f"React with 💖 if it  ✨🌺･｡:★:｡･ﾟ✧･ﾟ･✧  ＳＰＡＲＫ  ＪＯＹ  ✧･ﾟ･✧･ﾟ｡:★:｡･ﾟ🌺✨, React with 😭 if it doesn't."
         embed = discord.Embed(title=title, description=description)
         embed.set_image(url=card.image_uris['png'])
         embed.set_footer(text=f'{card.name}:{card.set}:{card.collector_number}')
         message = await channel.send(embed=embed)
         self.last_card_message_id = message.id
-        await message.add_reaction('❤️')
-        await message.add_reaction('🤮')
+        await message.add_reaction('💖')
+        await message.add_reaction('😭')
 
     @my_background_task.before_loop
     async def before_my_task(self):
@@ -87,58 +87,58 @@ class MyClient(discord.Client):
         if message.author.id == self.user.id:
             return
 
-        if message.content.startswith('!newsmashorpass'):
+        if message.content.startswith('!newsparksjoyordoesnotsparkjoy'):
             # Check reactions on last card message
 
             description = ''
             if self.last_card_message_id is not None:
 
-                total_smash = 0
-                total_pass = 0
+                total_sparks_joy = 0
+                total_does_not_spark_joy = 0
                 try:
                     last_message = await message.channel.fetch_message(self.last_card_message_id)
                     for reaction in last_message.reactions:
-                        if reaction.emoji == '❤️':
-                            total_smash += reaction.count - 1  # exclude bot's own reaction
-                        elif reaction.emoji == '🤮':
-                            total_pass += reaction.count - 1  # exclude bot's own reaction
+                        if reaction.emoji == '💖':
+                            total_sparks_joy += reaction.count - 1  # exclude bot's own reaction
+                        elif reaction.emoji == '😭':
+                            total_does_not_spark_joy += reaction.count - 1  # exclude bot's own reaction
 
                     card_info = last_message.embeds[0].footer.text
                     card_name, card_set, card_number = card_info.split(':')
 
-                    if total_smash > total_pass:
-                        description += f'The community has chosen to Smash {card_name} with {total_smash} votes! Added to the Smash list.\n\n'
-                        self.smash_list.append(card_info)
-                    elif total_pass > total_smash:
-                        description += f'The community has chosen to Pass {card_name} with {total_pass} votes! Added to the Pass list.\n\n'
-                        self.pass_list.append(card_info)
+                    if total_sparks_joy > total_does_not_spark_joy:
+                        description += f'The community has chosen: {card_name} ･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ with {total_sparks_joy} votes! Added to the list.\n\n'
+                        self.sparks_joy_list.append(card_info)
+                    elif total_does_not_spark_joy > total_sparks_joy:
+                        description += f'The community has chosen: {card_name} Does Not Spark Joy with {total_does_not_spark_joy} votes! Added to the list.\n\n'
+                        self.does_not_spark_joy_list.append(card_info)
                     else:
-                        description += f'The community is tied on {card_name} with {total_smash} Smash votes and {total_pass} Pass votes!\n\n'
+                        description += f'The community is tied on {card_name} with {total_sparks_joy} Sparks Joy votes and {total_does_not_spark_joy} Does Not Spark Joy votes!\n\n'
 
                 except discord.NotFound:
                     pass  # message was deleted
 
             card = self.get_new_card()
-            title = f'SMASH OR PASS: {card.name} | {card.set_name}'
-            description += f'React with ❤️ to add to Smash, React with 🤮 to add to Pass.'
+            title = f'DOES {card.name} | {card.set_name}\n ✨🌸･｡:★:｡･ﾟ✧  ＳＰＡＲＫ  ＪＯＹ  ✧･ﾟ｡:★:｡･ﾟ🌸✨?'
+            description += f"React with 💖 if it  ･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ, React with 😭 if it doesn't."
             embed = discord.Embed(title=title, description=description)
             embed.set_image(url=card.image_uris['normal'])
             embed.set_footer(text=f'{card.name}:{card.set}:{card.collector_number}')
             new_message = await message.channel.send(embed=embed)
             self.last_card_message_id = new_message.id
-            await new_message.add_reaction('❤️')
-            await new_message.add_reaction('🤮')
+            await new_message.add_reaction('💖')
+            await new_message.add_reaction('😭')
 
-        if message.content.startswith('!smashlist'):
-            smash_list_str = '\n'.join(self.smash_list) if self.smash_list else 'No cards in Smash list yet.'
-            await message.channel.send(f'Smash List:\n{smash_list_str}')
+        if message.content.startswith('!joylist'):
+            sparks_list_str = '\n'.join(self.sparks_joy_list) if self.sparks_joy_list else 'No cards in Sparks Joy list yet.'
+            await message.channel.send(f'✨🌸･｡:★:｡･ﾟ✧  ＳＰＡＲＫＳ  ＪＯＹ  ✧･ﾟ｡:★:｡･ﾟ🌸✨ List:\n{sparks_list_str}')
 
-        if message.content.startswith('!passlist'):
-            pass_list_str = '\n'.join(self.pass_list) if self.pass_list else 'No cards in Pass list yet.' 
-            await message.channel.send(f'Pass List:\n{pass_list_str}')
+        if message.content.startswith('!nojoylist'):
+            does_not_spark_list_str = '\n'.join(self.does_not_spark_joy_list) if self.does_not_spark_joy_list else 'No cards in Does Not Spark Joy list yet.' 
+            await message.channel.send(f'Does Not Spark Joy List:\n{does_not_spark_list_str}')
 
 intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
 
-client.run('YOUR_DISCORD_BOT_TOKEN_HERE')
+client.run('YOUR_BOT_TOKEN_HERE')

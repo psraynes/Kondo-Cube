@@ -1,3 +1,4 @@
 kondo_cube.spec
 build/*
 dist/*
+__pycache__/*
