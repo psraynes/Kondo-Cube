@@ -55,13 +55,13 @@ class MyClient(discord.Client):
                 card_info = last_message.embeds[0].footer.text
                 card_name, card_set, card_number = card_info.split('|')
                 if total_sparks_joy > total_does_not_spark_joy:
-                    description += f'The community has chosen: {card_name} ･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ with {total_sparks_joy} votes! Added to the list.\n\n'
+                    description += f'The community has chosen: {card_name} \n･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ\n Added to the list.\n\n'
                     self.sparks_joy_list.append(card_info)
                 elif total_does_not_spark_joy > total_sparks_joy:
-                    description += f'The community has chosen: {card_name} Does Not Spark Joy with {total_does_not_spark_joy} votes! Added to the list.\n\n'
+                    description += f'The community has chosen: {card_name} does not Spark Joy. Added to the list.\n\n'
                     self.does_not_spark_joy_list.append(card_info)
                 else:
-                    description += f'The community is tied on {card_name} with {total_sparks_joy} Sparks Joy votes and {total_does_not_spark_joy} Does Not Spark Joy votes!\n\n'
+                    description += f'The community is tied on {card_name} with {total_sparks_joy + total_does_not_spark_joy} total votes!\n\n'
 
             except discord.NotFound:
                 pass  # message was deleted
@@ -69,7 +69,7 @@ class MyClient(discord.Client):
         card = self.get_new_card()
 
         title = f'DOES {card.name} | {card.set_name}  ✨🌸･｡:★:｡･ﾟ✧･ﾟ･✧  ＳＰＡＲＫ  ＪＯＹ  ✧･ﾟ･✧･ﾟ｡:★:｡･ﾟ🌸✨?'
-        description += f"React with 💖 if it  ✨🌺･｡:★:｡･ﾟ✧･ﾟ･✧  ＳＰＡＲＫ  ＪＯＹ  ✧･ﾟ･✧･ﾟ｡:★:｡･ﾟ🌺✨, React with 😭 if it doesn't."
+        description += "React with 💖 if this card ･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ, React with 😭 if it doesn't."
         embed = discord.Embed(title=title, description=description)
         embed.set_footer(text=f'{card.name}|{card.set}|{card.collector_number}')
         # Check if card is double-faced and set image accordingly
@@ -141,20 +141,20 @@ class MyClient(discord.Client):
                     card_name, card_set, card_number = card_info.split('|')
 
                     if total_sparks_joy > total_does_not_spark_joy:
-                        description += f'The community has chosen: {card_name} ･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ with {total_sparks_joy} votes! Added to the list.\n\n'
+                        description += f'The community has chosen: {card_name} \n･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ\nAdded to the list.\n\n'
                         self.sparks_joy_list.append(card_info)
                     elif total_does_not_spark_joy > total_sparks_joy:
-                        description += f'The community has chosen: {card_name} Does Not Spark Joy with {total_does_not_spark_joy} votes! Added to the list.\n\n'
+                        description += f'The community has chosen: {card_name} does not Spark Joy! Added to the list.\n\n'
                         self.does_not_spark_joy_list.append(card_info)
                     else:
-                        description += f'The community is tied on {card_name} with {total_sparks_joy} Sparks Joy votes and {total_does_not_spark_joy} Does Not Spark Joy votes!\n\n'
+                        description += f'The community is tied on {card_name} with {total_sparks_joy + total_does_not_spark_joy} total votes!\n\n'
 
                 except discord.NotFound:
                     pass  # message was deleted
 
             card = self.get_new_card()
             title = f'DOES {card.name} | {card.set_name}\n ✨🌸･｡:★:｡･ﾟ✧  ＳＰＡＲＫ  ＪＯＹ  ✧･ﾟ｡:★:｡･ﾟ🌸✨?'
-            description += f"React with 💖 if it  ･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ, React with 😭 if it doesn't."
+            description += "React with 💖 if this card ･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ, React with 😭 if it doesn't."
             embed = discord.Embed(title=title, description=description)
             embed.set_footer(text=f'{card.name}|{card.set}|{card.collector_number}')
             # Check if card is double-faced and set image accordingly
@@ -204,4 +204,4 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
 
-client.run('YOUR_BOT_TOKEN')
+client.run('YOUR_BOT_TOKEN_HERE')
