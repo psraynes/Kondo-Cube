@@ -68,7 +68,11 @@ class MyClient(discord.Client):
         title = f'DOES {card.name} | {card.set_name}  ✨🌸･｡:★:｡･ﾟ✧･ﾟ･✧  ＳＰＡＲＫ  ＪＯＹ  ✧･ﾟ･✧･ﾟ｡:★:｡･ﾟ🌸✨?'
         description += f"React with 💖 if it  ✨🌺･｡:★:｡･ﾟ✧･ﾟ･✧  ＳＰＡＲＫ  ＪＯＹ  ✧･ﾟ･✧･ﾟ｡:★:｡･ﾟ🌺✨, React with 😭 if it doesn't."
         embed = discord.Embed(title=title, description=description)
-        embed.set_image(url=card.image_uris['png'])
+        # Check if card is double-faced and set image accordingly
+        if not card.image_uris and card.card_faces:
+            embed.set_image(url=card.card_faces[0].image_uris['png']) # Double face, load first face PNG
+        else:
+            embed.set_image(url=card.image_uris['png']) # Single face, load PNG
         embed.set_footer(text=f'{card.name}|{card.set}|{card.collector_number}')
         message = await channel.send(embed=embed)
         self.last_card_message_id = message.id
@@ -124,7 +128,11 @@ class MyClient(discord.Client):
             title = f'DOES {card.name} | {card.set_name}\n ✨🌸･｡:★:｡･ﾟ✧  ＳＰＡＲＫ  ＪＯＹ  ✧･ﾟ｡:★:｡･ﾟ🌸✨?'
             description += f"React with 💖 if it  ･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ, React with 😭 if it doesn't."
             embed = discord.Embed(title=title, description=description)
-            embed.set_image(url=card.image_uris['normal'])
+            # Check if card is double-faced and set image accordingly
+            if not card.image_uris and card.card_faces:
+                embed.set_image(url=card.card_faces[0].image_uris['png']) # Double face, load first face PNG
+            else:
+                embed.set_image(url=card.image_uris['png']) # Single face, load PNG
             embed.set_footer(text=f'{card.name}|{card.set}|{card.collector_number}')
             new_message = await message.channel.send(embed=embed)
             self.last_card_message_id = new_message.id
