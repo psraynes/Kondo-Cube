@@ -48,7 +48,7 @@ class MyClient(discord.Client):
                         total_does_not_spark_joy += reaction.count - 1  # exclude bot's own reaction
 
                 card_info = last_message.embeds[0].footer.text
-                card_name, card_set, card_number = card_info.split(':')
+                card_name, card_set, card_number = card_info.split('|')
                 if total_sparks_joy > total_does_not_spark_joy:
                     description += f'The community has chosen: {card_name} ･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ with {total_sparks_joy} votes! Added to the list.\n\n'
                     self.sparks_joy_list.append(card_info)
@@ -67,7 +67,7 @@ class MyClient(discord.Client):
         description += f"React with 💖 if it  ✨🌺･｡:★:｡･ﾟ✧･ﾟ･✧  ＳＰＡＲＫ  ＪＯＹ  ✧･ﾟ･✧･ﾟ｡:★:｡･ﾟ🌺✨, React with 😭 if it doesn't."
         embed = discord.Embed(title=title, description=description)
         embed.set_image(url=card.image_uris['png'])
-        embed.set_footer(text=f'{card.name}:{card.set}:{card.collector_number}')
+        embed.set_footer(text=f'{card.name}|{card.set}|{card.collector_number}')
         message = await channel.send(embed=embed)
         self.last_card_message_id = message.id
         await message.add_reaction('💖')
@@ -104,7 +104,7 @@ class MyClient(discord.Client):
                             total_does_not_spark_joy += reaction.count - 1  # exclude bot's own reaction
 
                     card_info = last_message.embeds[0].footer.text
-                    card_name, card_set, card_number = card_info.split(':')
+                    card_name, card_set, card_number = card_info.split('|')
 
                     if total_sparks_joy > total_does_not_spark_joy:
                         description += f'The community has chosen: {card_name} ･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ with {total_sparks_joy} votes! Added to the list.\n\n'
@@ -123,7 +123,7 @@ class MyClient(discord.Client):
             description += f"React with 💖 if it  ･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ, React with 😭 if it doesn't."
             embed = discord.Embed(title=title, description=description)
             embed.set_image(url=card.image_uris['normal'])
-            embed.set_footer(text=f'{card.name}:{card.set}:{card.collector_number}')
+            embed.set_footer(text=f'{card.name}|{card.set}|{card.collector_number}')
             new_message = await message.channel.send(embed=embed)
             self.last_card_message_id = new_message.id
             await new_message.add_reaction('💖')
