@@ -3,6 +3,9 @@ import datetime
 from discord.ext import tasks
 import scrython as scry
 from scrython.base import ScrythonRequestHandler
+import requests as req
+from PIL import Image
+from io import BytesIO
 
 local = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
 time = datetime.time(hour=9, minute=00, tzinfo=local)
@@ -68,13 +71,38 @@ class MyClient(discord.Client):
         title = f'DOES {card.name} | {card.set_name}  ✨🌸･｡:★:｡･ﾟ✧･ﾟ･✧  ＳＰＡＲＫ  ＪＯＹ  ✧･ﾟ･✧･ﾟ｡:★:｡･ﾟ🌸✨?'
         description += f"React with 💖 if it  ✨🌺･｡:★:｡･ﾟ✧･ﾟ･✧  ＳＰＡＲＫ  ＪＯＹ  ✧･ﾟ･✧･ﾟ｡:★:｡･ﾟ🌺✨, React with 😭 if it doesn't."
         embed = discord.Embed(title=title, description=description)
+        embed.set_footer(text=f'{card.name}|{card.set}|{card.collector_number}')
         # Check if card is double-faced and set image accordingly
         if not card.image_uris and card.card_faces:
             embed.set_image(url=card.card_faces[0].image_uris['png']) # Double face, load first face PNG
+            images = []
+            # Get images for all faces
+            for face in card.card_faces:
+                response = req.get(face.image_uris['png'])
+                response.raise_for_status()
+                images.append(Image.open(BytesIO(response.content)))
+
+            # Combine images horizontally
+            total_width = sum(img.width for img in images)
+            max_height = max(img.height for img in images)
+            combined_image = Image.new('RGBA', (total_width, max_height))
+            x_offset = 0
+            for img in images:
+                combined_image.paste(img, (x_offset, 0))
+                x_offset += img.width
+
+            # Same image and attach it to embed
+            png_bio = BytesIO()
+            combined_image.save(png_bio, format='PNG')
+            png_bio.seek(0)
+            file = discord.File(png_bio, filename='combined.png')
+            embed.set_image(url='attachment://combined.png')
+            message = await channel.send(file=file, embed=embed)
+
         else:
             embed.set_image(url=card.image_uris['png']) # Single face, load PNG
-        embed.set_footer(text=f'{card.name}|{card.set}|{card.collector_number}')
-        message = await channel.send(embed=embed)
+            message = await channel.send(embed=embed)
+
         self.last_card_message_id = message.id
         await message.add_reaction('💖')
         await message.add_reaction('😭')
@@ -85,7 +113,7 @@ class MyClient(discord.Client):
 
     def get_new_card(self):
         # get filter to exclude current cards
-        random_card = scry.cards.Random()
+        random_card = scry.cards.Random(q='')
         return random_card
 
     async def on_message(self, message):
@@ -128,13 +156,38 @@ class MyClient(discord.Client):
             title = f'DOES {card.name} | {card.set_name}\n ✨🌸･｡:★:｡･ﾟ✧  ＳＰＡＲＫ  ＪＯＹ  ✧･ﾟ｡:★:｡･ﾟ🌸✨?'
             description += f"React with 💖 if it  ･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ, React with 😭 if it doesn't."
             embed = discord.Embed(title=title, description=description)
+            embed.set_footer(text=f'{card.name}|{card.set}|{card.collector_number}')
             # Check if card is double-faced and set image accordingly
             if not card.image_uris and card.card_faces:
                 embed.set_image(url=card.card_faces[0].image_uris['png']) # Double face, load first face PNG
+                images = []
+                # Get images for all faces
+                for face in card.card_faces:
+                    response = req.get(face.image_uris['png'])
+                    response.raise_for_status()
+                    images.append(Image.open(BytesIO(response.content)))
+
+                # Combine images horizontally
+                total_width = sum(img.width for img in images)
+                max_height = max(img.height for img in images)
+                combined_image = Image.new('RGBA', (total_width, max_height))
+                x_offset = 0
+                for img in images:
+                    combined_image.paste(img, (x_offset, 0))
+                    x_offset += img.width
+
+                # Same image and attach it to embed
+                png_bio = BytesIO()
+                combined_image.save(png_bio, format='PNG')
+                png_bio.seek(0)
+                file = discord.File(png_bio, filename='combined.png')
+                embed.set_image(url='attachment://combined.png')
+                new_message = await message.channel.send(file=file, embed=embed)
+
             else:
                 embed.set_image(url=card.image_uris['png']) # Single face, load PNG
-            embed.set_footer(text=f'{card.name}|{card.set}|{card.collector_number}')
-            new_message = await message.channel.send(embed=embed)
+                new_message = await message.channel.send(embed=embed)
+
             self.last_card_message_id = new_message.id
             await new_message.add_reaction('💖')
             await new_message.add_reaction('😭')
@@ -151,4 +204,4 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
 
-client.run('YOUR_BOT_TOKEN_HERE')
+client.run('YOUR_BOT_TOKEN')
