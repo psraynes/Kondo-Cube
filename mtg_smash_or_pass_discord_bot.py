@@ -131,11 +131,11 @@ class MyClient(discord.Client):
 
         if message.content.startswith('!joylist'):
             sparks_list_str = '\n'.join(self.sparks_joy_list) if self.sparks_joy_list else 'No cards in Sparks Joy list yet.'
-            await message.channel.send(f'✨🌸･｡:★:｡･ﾟ✧  ＳＰＡＲＫＳ  ＪＯＹ  ✧･ﾟ｡:★:｡･ﾟ🌸✨ List:\n{sparks_list_str}')
+            await message.channel.send(f'✨🌸･｡:★:｡･ﾟ✧  ＳＰＡＲＫＳ  ＪＯＹ  ✧･ﾟ｡:★:｡･ﾟ🌸✨:\n{sparks_list_str}')
 
         if message.content.startswith('!nojoylist'):
             does_not_spark_list_str = '\n'.join(self.does_not_spark_joy_list) if self.does_not_spark_joy_list else 'No cards in Does Not Spark Joy list yet.' 
-            await message.channel.send(f'Does Not Spark Joy List:\n{does_not_spark_list_str}')
+            await message.channel.send(f'Does Not Spark Joy:\n{does_not_spark_list_str}')
 
 intents = discord.Intents.default()
 intents.message_content = True
