@@ -2,9 +2,11 @@ import discord
 import datetime
 from discord.ext import tasks
 import scrython as scry
+from scrython.base import ScrythonRequestHandler
 
 local = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
 time = datetime.time(hour=9, minute=00, tzinfo=local)
+ScrythonRequestHandler.set_user_agent('MTG Sparks Joy Bot v1.0')
 
 class MyClient(discord.Client):
     # Suppress error on the User attribute being None since it fills up later
