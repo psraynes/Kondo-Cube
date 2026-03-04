@@ -22,8 +22,8 @@ class MyClient(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.sparks_joy_list = []
-        self.does_not_spark_joy_list = []
+        self.sparks_joy_file = 'sparks_joy_list.txt'
+        self.does_not_spark_joy_file = 'does_not_spark_joy_list.txt'
 
         self.last_card_message_id = None
         self.channel_id = config['channel_id']
@@ -60,10 +60,12 @@ class MyClient(discord.Client):
                 card_name, card_set, card_number = card_info.split('|')
                 if total_sparks_joy > total_does_not_spark_joy:
                     description += f'The community has chosen: {card_name} \n･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ\n Added to the list.\n\n'
-                    self.sparks_joy_list.append(card_info)
+                    with open(self.sparks_joy_file, "a") as file:
+                        file.write(f"{card_info}\n")
                 elif total_does_not_spark_joy > total_sparks_joy:
                     description += f'The community has chosen: {card_name} does not Spark Joy. Added to the list.\n\n'
-                    self.does_not_spark_joy_list.append(card_info)
+                    with open(self.does_not_spark_joy_file, "a") as file:
+                        file.write(f"{card_info}\n")
                 else:
                     description += f'The community is tied on {card_name} with {total_sparks_joy + total_does_not_spark_joy} total votes!\n\n'
 
@@ -146,10 +148,12 @@ class MyClient(discord.Client):
 
                     if total_sparks_joy > total_does_not_spark_joy:
                         description += f'The community has chosen: {card_name} \n･｡･ﾟ✧ ＳＰＡＲＫＳ  ＪＯＹ ✧･ﾟ｡･ﾟ\nAdded to the list.\n\n'
-                        self.sparks_joy_list.append(card_info)
+                        with open(self.sparks_joy_file, "a") as file:
+                            file.write(f"{card_info}\n")
                     elif total_does_not_spark_joy > total_sparks_joy:
                         description += f'The community has chosen: {card_name} does not Spark Joy! Added to the list.\n\n'
-                        self.does_not_spark_joy_list.append(card_info)
+                        with open(self.does_not_spark_joy_file, "a") as file:
+                            file.write(f"{card_info}\n")
                     else:
                         description += f'The community is tied on {card_name} with {total_sparks_joy + total_does_not_spark_joy} total votes!\n\n'
 
@@ -197,11 +201,15 @@ class MyClient(discord.Client):
             await new_message.add_reaction('😭')
 
         if message.content.startswith('!joylist'):
-            sparks_list_str = '\n'.join(self.sparks_joy_list) if self.sparks_joy_list else 'No cards in Sparks Joy list yet.'
+            with open(self.sparks_joy_file, "r") as file:
+                sparks_joy_list = [line.strip() for line in file if line.strip()]
+            sparks_list_str = '\n'.join(sparks_joy_list) if sparks_joy_list else 'No cards in Sparks Joy list yet.'
             await message.channel.send(f'✨🌸･｡:★:｡･ﾟ✧  ＳＰＡＲＫＳ  ＪＯＹ  ✧･ﾟ｡:★:｡･ﾟ🌸✨:\n{sparks_list_str}')
 
         if message.content.startswith('!nojoylist'):
-            does_not_spark_list_str = '\n'.join(self.does_not_spark_joy_list) if self.does_not_spark_joy_list else 'No cards in Does Not Spark Joy list yet.' 
+            with open(self.does_not_spark_joy_file, "r") as file:
+                does_not_spark_joy_list = [line.strip() for line in file if line.strip()]
+            does_not_spark_list_str = '\n'.join(does_not_spark_joy_list) if does_not_spark_joy_list else 'No cards in Does Not Spark Joy list yet.'
             await message.channel.send(f'Does Not Spark Joy:\n{does_not_spark_list_str}')
 
 intents = discord.Intents.default()

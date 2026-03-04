@@ -3,3 +3,5 @@ build/*
 dist/*
 __pycache__/*
 config.json
+sparks_joy_list.txt
+does_not_spark_joy_list.txt
