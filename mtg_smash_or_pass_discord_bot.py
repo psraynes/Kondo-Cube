@@ -201,14 +201,20 @@ class MyClient(discord.Client):
             await new_message.add_reaction('😭')
 
         if message.content.startswith('!joylist'):
-            with open(self.sparks_joy_file, "r") as file:
-                sparks_joy_list = [line.strip() for line in file if line.strip()]
+            try:
+                with open(self.sparks_joy_file, "r") as file:
+                    sparks_joy_list = [line.strip() for line in file if line.strip()]
+            except FileNotFoundError:
+                sparks_joy_list = []
             sparks_list_str = '\n'.join(sparks_joy_list) if sparks_joy_list else 'No cards in Sparks Joy list yet.'
             await message.channel.send(f'✨🌸･｡:★:｡･ﾟ✧  ＳＰＡＲＫＳ  ＪＯＹ  ✧･ﾟ｡:★:｡･ﾟ🌸✨:\n{sparks_list_str}')
 
         if message.content.startswith('!nojoylist'):
-            with open(self.does_not_spark_joy_file, "r") as file:
-                does_not_spark_joy_list = [line.strip() for line in file if line.strip()]
+            try:
+                with open(self.does_not_spark_joy_file, "r") as file:
+                    does_not_spark_joy_list = [line.strip() for line in file if line.strip()]
+            except FileNotFoundError:
+                does_not_spark_joy_list = []
             does_not_spark_list_str = '\n'.join(does_not_spark_joy_list) if does_not_spark_joy_list else 'No cards in Does Not Spark Joy list yet.'
             await message.channel.send(f'Does Not Spark Joy:\n{does_not_spark_list_str}')
 
