@@ -6,9 +6,13 @@ from scrython.base import ScrythonRequestHandler
 import requests as req
 from PIL import Image
 from io import BytesIO
+import json
+
+with open('config.json') as f:
+    config = json.load(f)
 
 local = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
-time = datetime.time(hour=9, minute=00, tzinfo=local)
+time = datetime.time(hour=config['hour'], minute=config['minute'], tzinfo=local)
 ScrythonRequestHandler.set_user_agent('MTG Sparks Joy Bot v1.0')
 
 class MyClient(discord.Client):
@@ -22,7 +26,7 @@ class MyClient(discord.Client):
         self.does_not_spark_joy_list = []
 
         self.last_card_message_id = None
-        self.channel_id = 1466458603010654319 # replace with your channel ID
+        self.channel_id = config['channel_id']
 
     async def setup_hook(self) -> None:
         # start the task to run in the background
@@ -204,4 +208,4 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
 
-client.run('YOUR_BOT_TOKEN_HERE')
+client.run(config['bot_token'])
