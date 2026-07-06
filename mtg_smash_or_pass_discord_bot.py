@@ -26,7 +26,8 @@ class MyClient(discord.Client):
         self.does_not_spark_joy_file = 'does_not_spark_joy_list.txt'
 
         self.last_card_message_id = None
-        self.channel_id = config['channel_id']
+        self.channel_id = int(config['channel_id'])
+        self.guild_id = int(config['guild_id'])
 
     async def setup_hook(self) -> None:
         # start the task to run in the background
@@ -123,6 +124,10 @@ class MyClient(discord.Client):
         return random_card
 
     async def on_message(self, message):
+        # Check if the message is from the configured server
+        if message.guild and message.guild.id != self.guild_id:
+            return
+
         # don't respond to ourselves
         if message.author.id == self.user.id:
             return
@@ -203,20 +208,28 @@ class MyClient(discord.Client):
         if message.content.startswith('!joylist'):
             try:
                 with open(self.sparks_joy_file, "r") as file:
-                    sparks_joy_list = [line.strip() for line in file if line.strip()]
+                    sparks_joy_list = True
             except FileNotFoundError:
-                sparks_joy_list = []
-            sparks_list_str = '\n'.join(sparks_joy_list) if sparks_joy_list else 'No cards in Sparks Joy list yet.'
-            await message.channel.send(f'✨🌸･｡:★:｡･ﾟ✧  ＳＰＡＲＫＳ  ＪＯＹ  ✧･ﾟ｡:★:｡･ﾟ🌸✨:\n{sparks_list_str}')
+                sparks_joy_list = False
+                
+            if sparks_joy_list:
+                discord_file = discord.File(self.sparks_joy_file, filename="sparks_joy_list.txt")
+                await message.channel.send('✨🌸･｡:★:｡･ﾟ✧  ＳＰＡＲＫＳ  ＪＯＹ  ✧･ﾟ｡:★:｡･ﾟ🌸✨:', file=discord_file)
+            else:
+                await message.channel.send('✨🌸･｡:★:｡･ﾟ✧  ＳＰＡＲＫＳ  ＪＯＹ  ✧･ﾟ｡:★:｡･ﾟ🌸✨:\n No cards in Sparks Joy list yet.')
 
         if message.content.startswith('!nojoylist'):
             try:
                 with open(self.does_not_spark_joy_file, "r") as file:
-                    does_not_spark_joy_list = [line.strip() for line in file if line.strip()]
+                    does_not_spark_joy_list = True
             except FileNotFoundError:
-                does_not_spark_joy_list = []
-            does_not_spark_list_str = '\n'.join(does_not_spark_joy_list) if does_not_spark_joy_list else 'No cards in Does Not Spark Joy list yet.'
-            await message.channel.send(f'Does Not Spark Joy:\n{does_not_spark_list_str}')
+                does_not_spark_joy_list = False
+                
+            if does_not_spark_joy_list:
+                discord_file = discord.File(self.does_not_spark_joy_file, filename="does_not_spark_joy_list.txt")
+                await message.channel.send('Does Not Spark Joy:', file=discord_file)
+            else:
+                await message.channel.send('Does Not Spark Joy:\n No cards in Does Not Spark Joy list yet.')
 
 intents = discord.Intents.default()
 intents.message_content = True
