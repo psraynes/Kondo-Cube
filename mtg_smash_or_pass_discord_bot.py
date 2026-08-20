@@ -14,7 +14,7 @@ with open('config.json') as f:
 local = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
 time = datetime.time(hour=config['hour'], minute=config['minute'], tzinfo=local)
 ScrythonRequestHandler.set_user_agent('MTG Sparks Joy Bot v1.0')
-
+headers = {'User-Agent': 'MTG Sparks Joy Bot v1.0'}
 class MyClient(discord.Client):
     # Suppress error on the User attribute being None since it fills up later
     user: discord.ClientUser
@@ -85,7 +85,7 @@ class MyClient(discord.Client):
             images = []
             # Get images for all faces
             for face in card.card_faces:
-                response = req.get(face.image_uris['png'])
+                response = req.get(face.image_uris['png'], headers=headers)
                 response.raise_for_status()
                 images.append(Image.open(BytesIO(response.content)))
 
@@ -176,7 +176,7 @@ class MyClient(discord.Client):
                 images = []
                 # Get images for all faces
                 for face in card.card_faces:
-                    response = req.get(face.image_uris['png'])
+                    response = req.get(face.image_uris['png'], headers=headers)
                     response.raise_for_status()
                     images.append(Image.open(BytesIO(response.content)))
 
